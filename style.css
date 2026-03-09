@@ -46,7 +46,6 @@ margin-bottom:120px;
 font-weight:600;
 font-size:26px;
 color:#cc0000;
-
 }
 
 .links a::before{
@@ -332,4 +331,16 @@ font-weight:600;
 letter-spacing:4px;
 color:#cc0000;
 
+}
+
+/* blibking stuf*/
+
+.cursor{
+animation: blink 1s infinite;
+}
+
+@keyframes blink{
+0%{opacity:1;}
+50%{opacity:0;}
+100%{opacity:1;}
 }
