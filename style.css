@@ -77,6 +77,37 @@ color:#cc0000;
 
 }
 
+/*PROFILE PIC ---------------------------------------*/
+.profile-container{
+
+display:flex;
+justify-content:center;
+margin-bottom:50px;
+
+}
+
+.profile-ring{
+
+padding:6px;
+border-radius:50%;
+background:linear-gradient(135deg,#ff4d4d,#cc0000,#ff4d4d);
+box-shadow:0 0 14px rgba(204,0,0,0.35);
+
+}
+
+.profile-ring img{
+
+width:130px;
+height:130px;
+border-radius:50%;
+object-fit:cover;
+display:block;
+
+}
+
+
+
+
 
 /* HERO */
 
