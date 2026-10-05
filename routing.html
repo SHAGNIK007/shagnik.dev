@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Routing | shagnik.dev</title>
+<link rel="stylesheet" href="style.css">
+<link rel="icon" type="image/jpg" href="me.jpg">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+    .lang-label {
+        font-weight: bold;
+        font-size: 14px;
+        color: #555;
+        margin-top: 15px;
+        margin-bottom: 5px;
+    }
+</style>
+</head>
+<body>
+
+<nav>
+<div class="logo">shagnik.dev</div>
+<ul class="links">
+<li><a href="projects.html">cd projects/</a></li>
+<li><a href="blogs.html">cd blogs/</a></li>
+<li><a href="journey.html">cd journey/</a></li>
+<li><a href="index.html">cd me/</a></li>
+</ul>
+</nav>
+
+<section class="terminal">
+<p class="terminal-command">
+<span class="prompt">$</span> cat routing.md<span class="cursor">_</span>
+</p>
+
+<h1>Understanding Routing</h1>
+
+<h2>1. What is Routing?</h2>
+<p>
+Think of a web server as a massive office building, and <strong>routing</strong> is the friendly receptionist at the front desk. 
+</p>
+<p>
+When you (the client) walk in and ask for something (send a request), the receptionist needs to know two things: <em>what</em> you want to do (HTTP methods like <code>GET</code> for looking, or <code>POST</code> for delivering) and <em>where</em> you want to go (the URL path). The receptionist then maps your request to the right department (your server-side logic).
+</p>
+
+<div class="lang-label">For JS users:</div>
+<pre><code>// Express.js Example
+app.get('/users', (req, res) => {
+    // Receptionist saying: "Ah, you want to SEE the users? Right this way!"
+    res.json([{ name: 'Shagnik' }, { name: 'Soham' }]);
+});
+</code></pre>
+
+<div class="lang-label">For Golang users (me btw):</div>
+<pre><code>// Golang Example
+http.HandleFunc("GET /users", func(w http.ResponseWriter, r *http.Request) {
+    // Receptionist saying: "Ah, you want to SEE the users? Right this way!"
+    w.Header().Set("Content-Type", "application/json")
+    w.Write([]byte(`[{"name": "Shagnik"}, {"name": "Soham"}]`))
+})
+</code></pre>
+
+<h2>2. Static Routes</h2>
+<p>
+Static routes are like dedicated rooms in a house that never move. For instance, the kitchen is always the kitchen. The URL path is fixed and unchanging.
+</p>
+<p>
+If someone visits <code>/api/books</code>, they will always end up in the exact same spot, usually getting the exact same type of response.
+</p>
+
+<div class="lang-label">For JS users:</div>
+<pre><code>// Static Route Example
+app.get('/api/books', (req, res) => {
+    res.send('Welcome to the library! Here are all the books.');
+});
+</code></pre>
+
+<div class="lang-label">For Golang users (me btw):</div>
+<pre><code>// Static Route Example
+http.HandleFunc("GET /api/books", func(w http.ResponseWriter, r *http.Request) {
+    w.Write([]byte("Welcome to the library! Here are all the books."))
+})
+</code></pre>
+
+
+<h2>3. Dynamic Routes and Path Parameters</h2>
+<p>
+Imagine you're at a hotel. Instead of creating a unique route for every single guest (like <code>/room-101</code>, <code>/room-102</code>), we use a <strong>dynamic route</strong>. 
+</p>
+<p>
+We create a blueprint, like <code>/rooms/:roomNumber</code>. That parameter acts as a placeholder or a variable. When you visit <code>/rooms/105</code>, the server extracts "105" and knows exactly which room you're talking about.
+</p>
+
+<div class="lang-label">For JS users:</div>
+<pre><code>// URL: /rooms/105
+app.get('/rooms/:roomNumber', (req, res) => {
+    const roomNumber = req.params.roomNumber; // e.g. "105"
+    res.send(`Here are the details for room ${roomNumber}`);
+});
+</code></pre>
+
+<div class="lang-label">For Golang users (me btw):</div>
+<pre><code>// URL: /rooms/105
+http.HandleFunc("GET /rooms/{roomNumber}", func(w http.ResponseWriter, r *http.Request) {
+    roomNumber := r.PathValue("roomNumber") // e.g. "105"
+    w.Write([]byte("Here are the details for room " + roomNumber))
+})
+</code></pre>
+
+
+<h2>4. Query Parameters</h2>
+<p>
+If path parameters are for finding a specific thing, <strong>query parameters</strong> are for filtering or customizing what you found.
+</p>
+<p>
+Think of it like ordering coffee. The path is <code>/coffee</code>. But maybe you want it iced, with oat milk, and a pump of vanilla. You append those details to the end of your request using a question mark <code>?</code>. 
+</p>
+<p>
+In the URL, it looks like <code>/coffee?size=large&milk=oat</code>. Since <code>GET</code> requests can't carry heavy packages (request bodies), query parameters are the perfect way to pass along these extra instructions.
+</p>
+
+<div class="lang-label">For JS users:</div>
+<pre><code>// URL: /coffee?size=large&milk=oat
+app.get('/coffee', (req, res) => {
+    const size = req.query.size; // "large"
+    const milk = req.query.milk; // "oat"
+    res.send(`Preparing a ${size} coffee with ${milk} milk.`);
+});
+</code></pre>
+
+<div class="lang-label">For Golang users (me btw):</div>
+<pre><code>// URL: /coffee?size=large&milk=oat
+http.HandleFunc("GET /coffee", func(w http.ResponseWriter, r *http.Request) {
+    size := r.URL.Query().Get("size") // "large"
+    milk := r.URL.Query().Get("milk") // "oat"
+    w.Write([]byte("Preparing a " + size + " coffee with " + milk + " milk."))
+})
+</code></pre>
+
+
+<h2>5. Nested Routes</h2>
+<p>
+Nested routes are for when relationships get a bit complicated. Imagine you're trying to find a specific page inside a specific book that belongs to a specific library. 
+</p>
+<p>
+A nested route looks like this: <code>/api/users/123/posts/456</code>. 
+</p>
+<p>
+It reads exactly like a sentence: "Go to the user with ID 123, look at their posts, and grab the post with ID 456." It organizes your data cleanly by wrapping relationships directly into the URL.
+</p>
+
+<div class="lang-label">For JS users:</div>
+<pre><code>// Nested Route Example
+app.get('/api/users/:userId/posts/:postId', (req, res) => {
+    const { userId, postId } = req.params;
+    res.send(`Grabbing post ${postId} written by user ${userId}`);
+});
+</code></pre>
+
+<div class="lang-label">For Golang users (me btw):</div>
+<pre><code>// Nested Route Example
+http.HandleFunc("GET /api/users/{userId}/posts/{postId}", func(w http.ResponseWriter, r *http.Request) {
+    userId := r.PathValue("userId")
+    postId := r.PathValue("postId")
+    w.Write([]byte("Grabbing post " + postId + " written by user " + userId))
+})
+</code></pre>
+
+
+<h2>6. Route Versioning and Deprecation</h2>
+<p>
+Imagine your favorite restaurant suddenly changes its entire menu overnight. Chaos, right? That's what happens if you change an API without versioning it.
+</p>
+<p>
+<strong>Versioning</strong> is like having two menus. You put <code>v1</code> in the URL for the old menu, and <code>v2</code> for the new one (e.g., <code>/api/v1/products</code> vs <code>/api/v2/products</code>). 
+</p>
+<p>
+This gives developers time to switch their apps over to the new menu without their existing apps crashing. Once everyone has moved over, you can finally throw the old menu away.
+</p>
+
+<div class="lang-label">For JS users:</div>
+<pre><code>// Versioning Example
+app.get('/api/v1/products', (req, res) => {
+    res.json({ id: 1, title: 'Old format' });
+});
+
+app.get('/api/v2/products', (req, res) => {
+    // The new format
+    res.json({ productId: 1, productName: 'New format' });
+});
+</code></pre>
+
+<div class="lang-label">For Golang users (me btw):</div>
+<pre><code>// Versioning Example
+http.HandleFunc("GET /api/v1/products", func(w http.ResponseWriter, r *http.Request) {
+    w.Header().Set("Content-Type", "application/json")
+    w.Write([]byte(`{"id": 1, "title": "Old format"}`))
+})
+
+http.HandleFunc("GET /api/v2/products", func(w http.ResponseWriter, r *http.Request) {
+    // The new format
+    w.Header().Set("Content-Type", "application/json")
+    w.Write([]byte(`{"productId": 1, "productName": "New format"}`))
+})
+</code></pre>
+
+
+<h2>7. Catch-All Routes</h2>
+<p>
+Sometimes, someone asks the receptionist for a department that doesn't exist. Instead of just staring at them blankly (which is what a server normally does), we use a <strong>catch-all route</strong>.
+</p>
+<p>
+It’s the "Lost and Found" of your website. Represented by a wildcard like <code>/*</code>, it catches any request that didn't match a real route and politely tells the user, "Oops, you're lost!"
+</p>
+
+<div class="lang-label">For JS users:</div>
+<pre><code>// Catch-All Route Example
+app.get('*', (req, res) => {
+    res.status(404).send('Error 404: Whoops! This page doesn\'t exist.');
+});
+</code></pre>
+
+<div class="lang-label">For Golang users (me btw):</div>
+<pre><code>// Catch-All Route Example
+http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+    // The "/" path catches anything that doesn't have a specific handler
+    w.WriteHeader(http.StatusNotFound)
+    w.Write([]byte("Error 404: Whoops! This page doesn't exist."))
+})
+</code></pre>
+
+
+<p style="margin-top: 30px; font-style: italic;">
+    I hope you understood and enjoyed reading :>
+</p>
+
+</section>
+
+<footer>
+<p>© 2026 Shagnik</p>
+</footer>
+
+</body>
+</html>
